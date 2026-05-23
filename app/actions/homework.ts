@@ -9,6 +9,7 @@ import {
   insertThreadMessage,
 } from "@/lib/threads";
 import { isHomeworkKind, HOMEWORK_KIND_META } from "@/lib/homework";
+import { getPatientRecipientId } from "@/lib/patient-tasks";
 
 export async function assignHomework(
   recipientId: string,
@@ -79,3 +80,64 @@ export async function assignHomework(
   revalidatePath(`/messages/${thread.id}`);
   return { ok: true, id: task.id };
 }
+
+export async function submitTaskCompletion(
+  taskId: string,
+  input: { painScore?: number; note?: string; photoUrl?: string },
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const me = await getCurrentUser();
+  if (!me) return { ok: false, error: "Not signed in" };
+
+  const task = await prisma.patientTask.findUnique({ where: { id: taskId } });
+  if (!task) return { ok: false, error: "Task not found" };
+
+  const recipientId = await getPatientRecipientId(me.id);
+  if (recipientId !== task.recipientId) {
+    return { ok: false, error: "This task isn't assigned to you" };
+  }
+  if (task.completedAt) return { ok: true };
+
+  const updated = await prisma.patientTask.update({
+    where: { id: taskId },
+    data: {
+      completedAt: new Date(),
+      painScore: input.painScore ?? null,
+      note: input.note?.trim() || null,
+      photoUrl: input.photoUrl || null,
+    },
+  });
+
+  if (updated.threadId) {
+    const parts: string[] = [`Completed: ${updated.title}.`];
+    if (updated.painScore !== null && updated.painScore !== undefined) {
+      parts.push(`Pain ${updated.painScore}/10.`);
+    }
+    if (updated.note) parts.push(`Note: ${updated.note}`);
+    if (updated.photoUrl) parts.push("Photo attached.");
+    await insertThreadMessage({
+      threadId: updated.threadId,
+      authorId: me.id,
+      body: parts.join(" "),
+      kind: "homework_completed",
+      payload: {
+        taskId: updated.id,
+        painScore: updated.painScore ?? null,
+        note: updated.note ?? null,
+        photoUrl: updated.photoUrl ?? null,
+      },
+    });
+    revalidatePath(`/messages/${updated.threadId}`);
+  }
+
+  await recordAudit({
+    userId: me.id,
+    action: "patient_task.completed",
+    subject: updated.id,
+    meta: { recipientId: updated.recipientId, kind: updated.kind },
+  });
+
+  revalidatePath(`/dashboard`);
+  revalidatePath(`/recipients/${updated.recipientId}`);
+  return { ok: true };
+}
+

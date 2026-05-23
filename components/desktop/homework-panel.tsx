@@ -1,4 +1,4 @@
-import { CircleCheck, Circle, GraduationCap } from "lucide-react";
+import { CircleCheck, Circle, GraduationCap, Image as ImageIcon } from "lucide-react";
 import type { TaskWithAssignor } from "@/lib/patient-view";
 import {
   HOMEWORK_KIND_META,
@@ -93,6 +93,26 @@ function TaskCard({ task }: { task: TaskWithAssignor }) {
         <p className="mt-0.5 text-xs leading-relaxed text-[color:var(--halo-ink)]/75">
           {task.subtitle}
         </p>
+      )}
+      {done && (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          {task.painScore !== null && task.painScore !== undefined && (
+            <span className="inline-flex items-center rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-medium text-rose-700">
+              Pain {task.painScore}/10
+            </span>
+          )}
+          {task.photoUrl && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--halo-green-soft)] px-2 py-0.5 text-[11px] font-medium text-[color:var(--halo-green)]">
+              <ImageIcon className="h-3 w-3" />
+              Photo attached
+            </span>
+          )}
+        </div>
+      )}
+      {done && task.note && (
+        <blockquote className="mt-2 border-l-2 border-[color:var(--halo-gold)]/60 pl-2 text-[11px] italic leading-relaxed text-[color:var(--halo-ink)]/80">
+          &ldquo;{task.note}&rdquo;
+        </blockquote>
       )}
       <div className="mt-3 flex items-center justify-between text-[11px] text-[color:var(--halo-muted)]">
         <span>by {task.assignedBy.name.split(" ").slice(-1)[0]}</span>

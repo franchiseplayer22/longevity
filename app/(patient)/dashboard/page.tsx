@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { roleLabel } from "@/lib/roles";
 import { PatientTodayScreen } from "@/components/patient/patient-today-screen";
 import { openDemoRecipient } from "@/app/actions/recipients";
+import { getTasksForPatientUser, toDisplayTask } from "@/lib/patient-tasks";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -12,7 +13,9 @@ export default async function DashboardPage() {
 
   if (user.role === "patient") {
     const firstName = user.name.split(" ")[0] ?? "there";
-    return <PatientTodayScreen firstName={firstName} />;
+    const dbTasks = await getTasksForPatientUser(user.id);
+    const tasks = dbTasks.map(toDisplayTask);
+    return <PatientTodayScreen firstName={firstName} tasks={tasks} />;
   }
 
   return (

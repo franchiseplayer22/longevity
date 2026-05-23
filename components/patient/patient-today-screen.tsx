@@ -8,16 +8,24 @@ import {
   RECOVERY,
   TASKS,
   WEARABLE,
+  type PatientTaskItem,
 } from "@/lib/patient-today";
 
-export function PatientTodayScreen({ firstName }: { firstName: string }) {
+export function PatientTodayScreen({
+  firstName,
+  tasks,
+}: {
+  firstName: string;
+  tasks?: PatientTaskItem[];
+}) {
+  const items = tasks && tasks.length > 0 ? tasks : TASKS;
   return (
     <PatientShell
       greeting={`Good morning, ${firstName}.`}
       subhead="Here's what your care team has lined up today."
     >
       <RecoveryCard {...RECOVERY} />
-      <TaskList tasks={TASKS} />
+      <TaskList tasks={items} />
       <WearableCard {...WEARABLE} />
       <CareTeamCard {...CARE_TEAM_UPDATE} />
     </PatientShell>

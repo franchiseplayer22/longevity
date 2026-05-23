@@ -9,6 +9,7 @@ import {
   Stethoscope,
   ListChecks,
 } from "lucide-react";
+import type { IconBadgeTone } from "@/components/patient/icon-badge";
 
 export const HOMEWORK_KINDS = [
   "meds",
@@ -25,16 +26,16 @@ export type HomeworkKind = (typeof HOMEWORK_KINDS)[number];
 
 export const HOMEWORK_KIND_META: Record<
   HomeworkKind,
-  { label: string; icon: LucideIcon }
+  { label: string; icon: LucideIcon; tone: IconBadgeTone }
 > = {
-  meds: { label: "Medication", icon: Pill },
-  incision: { label: "Incision photo", icon: Camera },
-  walk: { label: "Walk", icon: Footprints },
-  hydration: { label: "Hydration", icon: GlassWater },
-  vitals: { label: "Vitals check", icon: HeartPulse },
-  sleep: { label: "Sleep", icon: Moon },
-  exercise: { label: "Exercise", icon: Stethoscope },
-  other: { label: "Other", icon: ListChecks },
+  meds: { label: "Medication", icon: Pill, tone: "rose" },
+  incision: { label: "Incision photo", icon: Camera, tone: "gold" },
+  walk: { label: "Walk", icon: Footprints, tone: "green" },
+  hydration: { label: "Hydration", icon: GlassWater, tone: "sky" },
+  vitals: { label: "Vitals check", icon: HeartPulse, tone: "violet" },
+  sleep: { label: "Sleep", icon: Moon, tone: "slate" },
+  exercise: { label: "Exercise", icon: Stethoscope, tone: "green" },
+  other: { label: "Other", icon: ListChecks, tone: "slate" },
 };
 
 export function isHomeworkKind(s: string): s is HomeworkKind {

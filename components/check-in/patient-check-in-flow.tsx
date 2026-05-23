@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { submitTaskCompletion } from "@/app/actions/homework";
 import {
   Camera,
   Check,
@@ -57,6 +58,7 @@ export function PatientCheckInFlow({ taskId }: { taskId?: string }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("incision");
   const [state, setState] = useState<CheckInState>(INITIAL);
+  const [, startTransition] = useTransition();
   const [submitting, setSubmitting] = useState(false);
 
   const stepIndex = STEPS.indexOf(step);
@@ -86,7 +88,17 @@ export function PatientCheckInFlow({ taskId }: { taskId?: string }) {
       return;
     }
     setSubmitting(true);
-    // Phase 4 is client-only; submission stub.
+    if (taskId) {
+      startTransition(async () => {
+        await submitTaskCompletion(taskId, {
+          painScore: state.painScore,
+          note: state.notes,
+          photoUrl: state.photoCaptured ? `captured://${taskId}` : undefined,
+        });
+        router.push("/dashboard");
+      });
+      return;
+    }
     window.setTimeout(() => router.push("/dashboard"), 350);
   };
 
