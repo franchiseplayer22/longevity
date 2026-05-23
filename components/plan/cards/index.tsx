@@ -11,13 +11,17 @@ import {
 } from "./medication-reminder";
 import { MealPlan, mealPlanPropsSchema } from "./meal-plan";
 import { Milestone, milestonePropsSchema } from "./milestone";
+import { NearbyPlaces, nearbyPlacesPropsSchema } from "./nearby-places";
+import { RecoveryShop, recoveryShopPropsSchema } from "./recovery-shop";
 
 export type PlanComponentName =
   | "CareTeamUpdate"
   | "ActivityPlan"
   | "MedicationReminder"
   | "MealPlan"
-  | "Milestone";
+  | "Milestone"
+  | "NearbyPlaces"
+  | "RecoveryShop";
 
 type Entry<S extends z.ZodTypeAny> = {
   name: PlanComponentName;
@@ -58,6 +62,20 @@ export const PLAN_COMPONENTS: { [K in PlanComponentName]: Entry<z.ZodTypeAny> } 
       "A recovery milestone with target date, narrative, and lock/progress/done status.",
     component: Milestone as ComponentType<unknown>,
     propsSchema: milestonePropsSchema,
+  },
+  NearbyPlaces: {
+    name: "NearbyPlaces",
+    description:
+      "Nearby places useful for recovery (PT clinic, walking group, pool, park, etc.) with distance and CTA.",
+    component: NearbyPlaces as ComponentType<unknown>,
+    propsSchema: nearbyPlacesPropsSchema,
+  },
+  RecoveryShop: {
+    name: "RecoveryShop",
+    description:
+      "Recovery-related product recommendations with rationale, price, and retailer.",
+    component: RecoveryShop as ComponentType<unknown>,
+    propsSchema: recoveryShopPropsSchema,
   },
 };
 
