@@ -20,10 +20,7 @@ export function PatientTodayScreen({
 }) {
   const items = tasks && tasks.length > 0 ? tasks : TASKS;
   return (
-    <PatientShell
-      greeting={`Good morning, ${firstName}.`}
-      subhead="Here's what your care team has lined up today."
-    >
+    <PatientShell greeting={`Good morning, ${firstName}.`}>
       <RecoveryCard {...RECOVERY} />
       <TaskList tasks={items} />
       <WearableCard {...WEARABLE} />

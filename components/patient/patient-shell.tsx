@@ -14,10 +14,7 @@ export function PatientShell({
     <div className="min-h-screen pb-32 md:pb-12">
       <div className="mx-auto w-full max-w-md px-5 pt-8">
         <header className="mb-5">
-          <span className="halo-wordmark text-base text-[color:var(--halo-muted)]">
-            Halo
-          </span>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[color:var(--halo-ink)]">
+          <h1 className="text-xl font-semibold tracking-tight text-[color:var(--halo-ink)]">
             {greeting}
           </h1>
           {subhead && (

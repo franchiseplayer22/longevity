@@ -9,7 +9,7 @@ export default async function ProfilePage() {
   if (!user) redirect("/");
 
   return (
-    <PatientShell greeting="Profile" subhead="Your account at a glance.">
+    <PatientShell greeting="Profile">
       <PatientCard eyebrow={roleLabel(user.role)} title={user.name}>
         <dl className="divide-y divide-[color:var(--halo-ink)]/5 text-sm">
           <Row label="Email" value={user.email ?? "—"} />

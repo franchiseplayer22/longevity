@@ -77,16 +77,17 @@ export const CARE_TEAMS: CareTeam[] = [
         },
       },
       {
-        id: "cardiac-meal",
-        component: "MealPlan",
+        id: "cardiac-activity",
+        component: "ActivityPlan",
         props: {
-          title: "Heart-light dinner",
-          mealType: "dinner",
-          caloriesApprox: 520,
-          items: [
-            { name: "Baked salmon with lemon", why: "Omega-3 for inflammation" },
-            { name: "Roasted sweet potato", why: "Slow-release energy + potassium" },
-            { name: "Steamed greens with olive oil", why: "Fiber and unsaturated fats" },
+          title: "Tomorrow's cardiac rehab block",
+          intensity: "gentle",
+          durationMinutes: 24,
+          steps: [
+            "5 min seated warm-up, focus on breath cadence.",
+            "12 min walk at conversational pace, flat ground.",
+            "4 min standing balance reps, hand on chair.",
+            "3 min cool-down with diaphragmatic breathing.",
           ],
         },
       },
