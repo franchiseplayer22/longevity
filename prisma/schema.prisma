@@ -25,7 +25,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships Membership[]
+  memberships    Membership[]
+  threadMembers  ThreadMember[]
+  messages       DirectMessage[]
+  auditLogs      AuditLog[]
 }
 
 model CareRecipient {
@@ -50,4 +53,58 @@ model Membership {
 
   @@unique([userId, recipientId])
   @@index([recipientId])
+}
+
+model Thread {
+  id        String   @id @default(cuid())
+  kind      String   @default("direct")
+  topic     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  ThreadMember[]
+  messages DirectMessage[]
+}
+
+model ThreadMember {
+  id        String   @id @default(cuid())
+  threadId  String
+  userId    String
+  role      String?
+  createdAt DateTime @default(now())
+
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([threadId, userId])
+  @@index([userId])
+}
+
+model DirectMessage {
+  id        String   @id @default(cuid())
+  threadId  String
+  authorId  String
+  body      String
+  kind      String   @default("text")
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  subject   String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([action, createdAt])
+  @@index([userId, createdAt])
 }
