@@ -1,5 +1,5 @@
+import { AuthCard } from "./(marketing)/auth-card";
 import { LandingRotator } from "./(marketing)/landing-rotator";
-import { SignInCard } from "./(marketing)/sign-in-card";
 
 export default function LandingPage() {
   return (
@@ -27,7 +27,7 @@ export default function LandingPage() {
         </div>
 
         <div className="flex w-full justify-center lg:justify-end">
-          <SignInCard />
+          <AuthCard />
         </div>
       </section>
 
