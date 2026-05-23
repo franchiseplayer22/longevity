@@ -54,3 +54,18 @@ body {
 .halo-fade-up {
   animation: halo-fade-up 420ms ease-out both;
 }
+
+@keyframes halo-typing-dot {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.halo-typing-dot {
+  animation: halo-typing-dot 1100ms ease-in-out infinite both;
+}
