@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f4ee;
+  --foreground: #14241b;
+  --halo-green: #1f6f4a;
+  --halo-green-soft: #e7f1ea;
+  --halo-gold: #c79a3a;
+  --halo-cream: #f3ece0;
+  --halo-ink: #14241b;
+  --halo-muted: #6c7a72;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-halo-green: var(--halo-green);
+  --color-halo-green-soft: var(--halo-green-soft);
+  --color-halo-gold: var(--halo-gold);
+  --color-halo-cream: var(--halo-cream);
+  --color-halo-ink: var(--halo-ink);
+  --color-halo-muted: var(--halo-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.halo-wordmark {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+@keyframes halo-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.halo-fade-up {
+  animation: halo-fade-up 420ms ease-out both;
 }

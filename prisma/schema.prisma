@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  nurse
+  patient
+  service
+}
+
+model User {
+  id        String   @id @default(cuid())
+  privyDid  String?  @unique
+  email     String?  @unique
+  name      String
+  role      UserRole @default(patient)
+  locale    String   @default("en-US")
+  state     String?
+  npi       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+}
+
+model CareRecipient {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+}
+
+model Membership {
+  id          String   @id @default(cuid())
+  userId      String
+  recipientId String
+  familyKind  String
+  role        String?
+  createdAt   DateTime @default(now())
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipient CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipientId])
+  @@index([recipientId])
+}
