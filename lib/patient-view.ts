@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { MARGARET_CHART } from "@/lib/margaret-chart";
-import type { CareReport, User } from "@prisma/client";
+import type { CareReport, PatientTask, User } from "@prisma/client";
 
 export type ReportWithAuthor = CareReport & {
   author: Pick<User, "id" | "name" | "role">;
   resolvedBy: Pick<User, "id" | "name"> | null;
+};
+
+export type TaskWithAssignor = PatientTask & {
+  assignedBy: Pick<User, "id" | "name" | "role">;
 };
 
 export type DesktopPatientChartData = {
@@ -19,6 +23,7 @@ export type DesktopPatientChartData = {
   handoff: typeof MARGARET_CHART.handoff;
   careTeam: typeof MARGARET_CHART.careTeam;
   reports: ReportWithAuthor[];
+  tasks: TaskWithAssignor[];
 };
 
 export async function getDesktopPatientChartData(
@@ -29,14 +34,23 @@ export async function getDesktopPatientChartData(
   });
   if (!recipient) return null;
 
-  const reports = await prisma.careReport.findMany({
-    where: { recipientId },
-    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-    include: {
-      author: { select: { id: true, name: true, role: true } },
-      resolvedBy: { select: { id: true, name: true } },
-    },
-  });
+  const [reports, tasks] = await Promise.all([
+    prisma.careReport.findMany({
+      where: { recipientId },
+      orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+      include: {
+        author: { select: { id: true, name: true, role: true } },
+        resolvedBy: { select: { id: true, name: true } },
+      },
+    }),
+    prisma.patientTask.findMany({
+      where: { recipientId },
+      orderBy: [{ completedAt: { sort: "asc", nulls: "first" } }, { createdAt: "desc" }],
+      include: {
+        assignedBy: { select: { id: true, name: true, role: true } },
+      },
+    }),
+  ]);
 
   return {
     recipientId: recipient.id,
@@ -50,5 +64,6 @@ export async function getDesktopPatientChartData(
     handoff: MARGARET_CHART.handoff,
     careTeam: MARGARET_CHART.careTeam,
     reports,
+    tasks,
   };
 }

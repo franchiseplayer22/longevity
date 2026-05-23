@@ -29,8 +29,9 @@ model User {
   threadMembers   ThreadMember[]
   messages        DirectMessage[]
   auditLogs       AuditLog[]
-  reportsAuthored CareReport[] @relation("ReportAuthor")
-  reportsResolved CareReport[] @relation("ReportResolver")
+  reportsAuthored CareReport[]  @relation("ReportAuthor")
+  reportsResolved CareReport[]  @relation("ReportResolver")
+  tasksAssigned   PatientTask[] @relation("TaskAssignor")
 }
 
 model CareRecipient {
@@ -41,6 +42,7 @@ model CareRecipient {
 
   memberships Membership[]
   reports     CareReport[]
+  tasks       PatientTask[]
 }
 
 model Membership {
@@ -129,4 +131,26 @@ model CareReport {
   resolvedBy User?         @relation("ReportResolver", fields: [resolvedById], references: [id])
 
   @@index([recipientId, status, createdAt])
+}
+
+model PatientTask {
+  id           String    @id @default(cuid())
+  recipientId  String
+  assignedById String
+  title        String
+  subtitle     String
+  kind         String
+  threadId     String?
+  messageId    String?
+  completedAt  DateTime?
+  painScore    Int?
+  note         String?
+  photoUrl     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  recipient  CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  assignedBy User          @relation("TaskAssignor", fields: [assignedById], references: [id])
+
+  @@index([recipientId, completedAt, createdAt])
 }

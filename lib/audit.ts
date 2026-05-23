@@ -3,7 +3,11 @@ import type { Prisma } from "@prisma/client";
 
 export type AuditAction =
   | "thread.read"
-  | "thread.message.send";
+  | "thread.message.send"
+  | "report.created"
+  | "report.resolved"
+  | "patient_task.assigned"
+  | "patient_task.completed";
 
 export async function recordAudit({
   userId,

@@ -14,6 +14,8 @@ import {
 import type { DesktopPatientChartData } from "@/lib/patient-view";
 import { PostReportForm } from "./post-report-form";
 import { ResolveReportButton } from "./resolve-report-button";
+import { AssignHomeworkForm } from "./assign-homework-form";
+import { HomeworkPanel } from "./homework-panel";
 
 export function DesktopPatientChart({
   data,
@@ -25,6 +27,7 @@ export function DesktopPatientChart({
     <div className="mx-auto flex max-w-7xl flex-col gap-5 px-8 py-8">
       <HeaderStrip data={data} />
       <CareTeamStrip careTeam={data.careTeam} />
+      <HomeworkPanel tasks={data.tasks} />
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         <SummaryCard
           className="xl:col-span-5"
@@ -124,6 +127,7 @@ function HeaderStrip({ data }: { data: DesktopPatientChartData }) {
         <Chip tone="green">
           Admit {recipient.admittedAt} → discharge {recipient.expectedDischarge}
         </Chip>
+        <AssignHomeworkForm recipientId={data.recipientId} />
         <PostReportForm recipientId={data.recipientId} />
       </div>
     </div>
