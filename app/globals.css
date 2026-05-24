@@ -69,3 +69,46 @@ body {
 .halo-typing-dot {
   animation: halo-typing-dot 1100ms ease-in-out infinite both;
 }
+
+@keyframes halo-check-circle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes halo-check-tick {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes halo-check-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.halo-check-svg {
+  animation: halo-check-pop 380ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.halo-check-svg circle {
+  stroke-dasharray: 226;
+  stroke-dashoffset: 226;
+  animation: halo-check-circle 600ms ease-out 80ms forwards;
+}
+
+.halo-check-svg polyline {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: halo-check-tick 320ms ease-out 540ms forwards;
+}

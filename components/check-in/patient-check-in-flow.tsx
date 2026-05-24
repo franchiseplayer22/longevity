@@ -60,6 +60,7 @@ export function PatientCheckInFlow({ taskId }: { taskId?: string }) {
   const [state, setState] = useState<CheckInState>(INITIAL);
   const [, startTransition] = useTransition();
   const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
 
   const stepIndex = STEPS.indexOf(step);
   const isFirst = stepIndex === 0;
@@ -88,6 +89,8 @@ export function PatientCheckInFlow({ taskId }: { taskId?: string }) {
       return;
     }
     setSubmitting(true);
+    setDone(true);
+    const SPLASH_MS = 1400;
     if (taskId) {
       startTransition(async () => {
         await submitTaskCompletion(taskId, {
@@ -95,12 +98,12 @@ export function PatientCheckInFlow({ taskId }: { taskId?: string }) {
           note: state.notes,
           photoUrl: state.photoCaptured ? `captured://${taskId}` : undefined,
         });
-        router.push("/dashboard");
       });
-      return;
     }
-    window.setTimeout(() => router.push("/dashboard"), 350);
+    window.setTimeout(() => router.push("/dashboard"), SPLASH_MS);
   };
+
+  if (done) return <CheckInSuccessSplash />;
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 pb-32 pt-6">
@@ -555,6 +558,42 @@ function Footer({
           )}
         </button>
       </div>
+    </div>
+  );
+}
+
+function CheckInSuccessSplash() {
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[color:var(--halo-green)] px-6 text-center text-white">
+      <svg
+        viewBox="0 0 80 80"
+        className="halo-check-svg h-24 w-24"
+        aria-hidden
+      >
+        <circle
+          cx="40"
+          cy="40"
+          r="36"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="4"
+          opacity="0.9"
+        />
+        <polyline
+          points="24,42 36,54 56,30"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <h2 className="mt-6 text-2xl font-semibold tracking-tight">
+        Check-in sent.
+      </h2>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-white/85">
+        Your care team has the update. Heading back to Today…
+      </p>
     </div>
   );
 }
