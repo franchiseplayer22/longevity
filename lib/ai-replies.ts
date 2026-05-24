@@ -1,8 +1,10 @@
 import type { PlanItem } from "@/components/plan/cards";
+import type { AugurResponse } from "@/lib/augur-types";
 
 export type AiReply =
   | { kind: "text"; text: string }
-  | { kind: "card"; intro?: string; item: PlanItem };
+  | { kind: "card"; intro?: string; item: PlanItem }
+  | { kind: "augur"; intro?: string; data: AugurResponse };
 
 function lc(s: string): string {
   return s.toLowerCase();
@@ -140,8 +142,50 @@ const TEXT_FALLBACKS: Array<{ test: RegExp; reply: string }> = [
 const DEFAULT_TEXT =
   "I can pull up nearby support, recovery products, or a meal plan — just say the word. Or ask me anything and I'll loop in your care team if needed.";
 
-export function resolveReply(input: string): AiReply {
+const FOOD_LOG_PATTERN =
+  /\b(i\s+(had|ate|drank|ordered|tried))\b|\bfor\s+(breakfast|lunch|dinner|a\s+snack|brunch)\b|\b(this\s+morning|last\s+night)\b/i;
+
+const FOOD_LEXICON =
+  /\b(salmon|tuna|sardine|mackerel|chicken|fried\s+chicken|steak|eggs?|tofu|burger|pizza|fries|hot\s+dog|chips|crackers|rice|brown\s+rice|pasta|bread|oatmeal|cereal|yogurt|cottage|cheese|milk|salad|spinach|kale|broccoli|berries|banana|apple|orange|smoothie|sandwich|sushi|wine|beer|soda|coffee|water|juice|chocolate|cake|cookie|ice\s+cream)\b/i;
+
+export function looksLikeFoodLog(input: string): boolean {
+  return FOOD_LOG_PATTERN.test(input) || FOOD_LEXICON.test(input);
+}
+
+async function augurReply(input: string): Promise<AiReply | null> {
+  try {
+    const res = await fetch("/api/augur/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        food: input,
+        symptoms: {},
+        userDaysLogged: 30,
+        medications: [],
+        allergies: [],
+      }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as AugurResponse;
+    if (!data.foodsParsed?.some((f) => f.recognized)) return null;
+    return {
+      kind: "augur",
+      intro:
+        "I logged that against your prior. Here's what the patterns suggest — your care team can review the same summary.",
+      data,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function resolveReply(input: string): Promise<AiReply> {
   const text = lc(input);
+
+  if (looksLikeFoodLog(input)) {
+    const a = await augurReply(input);
+    if (a) return a;
+  }
   if (/(\bwalk\b|group|nearby|park|pool|clinic)/i.test(text)) {
     return nearbyReply();
   }
@@ -158,7 +202,7 @@ export function resolveReply(input: string): AiReply {
 }
 
 export const AI_SUGGESTIONS = [
+  "I had fried chicken and fries for lunch",
   "Find a walking group near me",
-  "What should I eat tonight?",
   "Show products that help recovery",
 ];

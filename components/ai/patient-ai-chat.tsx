@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Send, Sparkles } from "lucide-react";
 import { renderPlanComponent } from "@/components/plan/cards";
 import { AI_SUGGESTIONS, resolveReply, type AiReply } from "@/lib/ai-replies";
+import { AugurInsightCard } from "./augur-insight-card";
 
 type ChatMessage =
   | { id: string; from: "user"; text: string }
@@ -37,16 +38,21 @@ export function PatientAiChat() {
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setTyping(true);
-    const delay =
+    const startedAt = Date.now();
+    const minDelay =
       TYPING_MIN_MS + Math.random() * (TYPING_MAX_MS - TYPING_MIN_MS);
-    window.setTimeout(() => {
-      const reply = resolveReply(text);
-      setMessages((m) => [
-        ...m,
-        { id: `a-${Date.now()}`, from: "ai", reply },
-      ]);
-      setTyping(false);
-    }, delay);
+    void (async () => {
+      const reply = await resolveReply(text);
+      const elapsed = Date.now() - startedAt;
+      const wait = Math.max(0, minDelay - elapsed);
+      window.setTimeout(() => {
+        setMessages((m) => [
+          ...m,
+          { id: `a-${Date.now()}`, from: "ai", reply },
+        ]);
+        setTyping(false);
+      }, wait);
+    })();
   };
 
   return (
@@ -123,6 +129,20 @@ function renderMessage(m: ChatMessage) {
         <div className="max-w-[80%] rounded-2xl bg-white px-4 py-2.5 text-sm leading-relaxed text-[color:var(--halo-ink)] shadow-sm">
           {m.reply.text}
         </div>
+      </div>
+    );
+  }
+  if (m.reply.kind === "augur") {
+    return (
+      <div className="flex flex-col gap-2">
+        {m.reply.intro && (
+          <div className="flex justify-start">
+            <div className="max-w-[85%] rounded-2xl bg-white px-4 py-2.5 text-sm leading-relaxed text-[color:var(--halo-ink)] shadow-sm">
+              {m.reply.intro}
+            </div>
+          </div>
+        )}
+        <AugurInsightCard data={m.reply.data} />
       </div>
     );
   }
