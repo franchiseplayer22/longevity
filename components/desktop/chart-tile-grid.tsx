@@ -70,7 +70,7 @@ export function ChartTileGrid({ data }: { data: DesktopPatientChartData }) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {tiles.map((tile) => (
           <motion.button
             key={tile.id}
@@ -79,7 +79,7 @@ export function ChartTileGrid({ data }: { data: DesktopPatientChartData }) {
             transition={SPRING}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="relative flex h-44 flex-col items-start gap-3 overflow-hidden rounded-3xl border border-[color:var(--halo-ink)]/10 bg-white p-5 text-left shadow-[0_18px_40px_-32px_rgba(20,36,27,0.4)] transition-colors hover:border-[color:var(--halo-green)]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--halo-green)]/50"
+            className="relative flex h-48 flex-col items-start gap-3 overflow-hidden rounded-3xl border border-[color:var(--halo-ink)]/10 bg-white p-5 text-left shadow-[0_18px_40px_-32px_rgba(20,36,27,0.4)] transition-colors hover:border-[color:var(--halo-green)]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--halo-green)]/50"
           >
             <TileHeader icon={tile.icon} tone={tile.tone} eyebrow={tile.eyebrow} />
             <div className="flex-1">{tile.preview}</div>
