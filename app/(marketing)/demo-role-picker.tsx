@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { Stethoscope, HeartPulse, HandHeart, Sparkles } from "lucide-react";
 import { pickRole } from "@/app/actions/pick-role";
 import { DEMO_ROLES, type DemoRole } from "@/lib/roles";
@@ -23,6 +24,7 @@ export function DemoRolePicker() {
       try {
         await pickRole(role);
       } catch (e) {
+        unstable_rethrow(e);
         setErr(e instanceof Error ? e.message : "Could not switch role");
         setActive(null);
       }
